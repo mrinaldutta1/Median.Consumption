@@ -112,6 +112,7 @@ namespace MedianConsumption
 
                     foreach (Item item in fileType.Item)
                     {
+                        item.Index = null;
                         for(int i =0;i<headers.Count();i++)
                         {
                             if (headers[i] == item.FileHeaderName)
