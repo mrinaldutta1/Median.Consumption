@@ -29,9 +29,11 @@ Assumptions:
 As per the requirement in this case I have not taken into consideration these columns.
 
 Future Enhancements/ Possible Areas of Improvement:
-1. Make the solution more dynamic so that it can dynamically determine the datatype of the target columns
+
+1. Include more test cases in the solution
 2. Create an error folder along with archive, so in case of exceptions files are moved to the archive location
 3. Introduce Interfaces or Dependency Injection to the solution, so as to facilitate ease of testing 
 4. Create some amount of logging logic to a .txt file
-5. Include more extensive test cases
+5. Make the solution more dynamic so that it can dynamically determine the datatype of the target columns
+
 
