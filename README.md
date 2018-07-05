@@ -5,8 +5,8 @@ Hi There!
 
 You would need to do the following steps to run and execute the solution:
 1. Open the .sln file inside MedianConsumption/MedianConsumption in Visual Studio 2017
-2. Change the input folder in the App.Config to you Input Folder which would cointain the files to process
-3. Run the solution to read the files
+2. Change the input folder in the App.Config to your Input Folder which would cointain the files to process
+3. Build and Run the solution to read the files
 4. You may need to upgrade your MSTest.TestAdapter and MSTest.TestFrameWork in case the test cases doesn't work
 https://stackoverflow.com/questions/42861930/unit-tests-not-discovered-in-visual-studio-2017
 
@@ -16,7 +16,7 @@ of more than 20 percent.
 2. It would validate the structure of the file to look for columns it is expecting, and output an error if it doesn't find a column 
 it is expecting
 3. The column names could be changed for future proofing in the FileConfiguration.xml included in the solution, which has the file 
-configrations saved.
+configurations saved.
 4. It would check if the data we are looking at has values which are technically not acceptable
 5. I have included a couple of basis test cases to test the median values
 6. The program also archives the input files into a archive directory, which it creates if not present
