@@ -40,11 +40,11 @@ namespace Entities
                 List<FileRow> sortedMeterReads = meterReads.OrderBy(o => o.DataValue).ToList();
                 int size = sortedMeterReads.Count();
                 int mid = size / 2;
-                if (size % 2 == 0)
+                if (size % 2 != 0)
                     median = sortedMeterReads[mid].DataValue;
                 else
                     median = (sortedMeterReads[mid].DataValue +
-                             sortedMeterReads[mid + 1].DataValue) / 2;
+                             sortedMeterReads[mid - 1].DataValue) / 2;
 
                 return median;
             }
