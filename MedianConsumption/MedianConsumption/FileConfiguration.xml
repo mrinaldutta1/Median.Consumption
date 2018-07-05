@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FileTypes>
+<FileType>
+  <Identifier>LP*</Identifier>
+  <Item>
+      <ValueType>Occurence DateTime</ValueType>
+      <FileHeaderName>Date/Time</FileHeaderName>
+      <DotNetDataType>DateTime</DotNetDataType>   
+  </Item>
+  <Item>
+    <ValueType>Data Value</ValueType>
+    <FileHeaderName>Data Value</FileHeaderName>
+    <DotNetDataType>Double</DotNetDataType>
+  </Item>
+</FileType>
+<FileType>
+  <Identifier>TOU*</Identifier>
+  <Item>
+    <ValueType>Occurence DateTime</ValueType>
+    <FileHeaderName>Date/Time</FileHeaderName>
+    <DotNetDataType>DateTime</DotNetDataType>
+  </Item>
+  <Item>
+    <ValueType>Data Value</ValueType>
+    <FileHeaderName>Energy</FileHeaderName>
+    <DotNetDataType>Double</DotNetDataType>
+  </Item>
+</FileType>
+</FileTypes>
