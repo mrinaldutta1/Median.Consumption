@@ -1,19 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Entities
 {
 
 
+    /// <summary>
+    /// Class For Input DataFiles
+    /// </summary>
     public class DataFile
     {
+        private readonly static log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+
         public string FileType { get; set; }
         public string FileName { get; set; }
         public double MedianValue { get; set; }
         public List<FileRow> MeterReads { get; set; }
+        public FileProcessStatus ProcessingStatus { get;set; }
 
         public DataFile(string fileName, double medianValue, List<FileRow> meterReads)
         {
@@ -26,11 +32,16 @@ namespace Entities
         {
 
         }
-
+        /// <summary>
+        /// Calculates Median value based on an input list
+        /// </summary>
+        /// <param name="meterReads"></param>
+        /// <returns></returns>
         public static double CalculateMedian(List<FileRow> meterReads)
         {
             try
             {
+                log.Debug("Start CalculateMedian()");
 
                 double median;
 
@@ -49,26 +60,28 @@ namespace Entities
                 return median;
             }
 
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
 
 
         }
 
+       
     }
 
     public class FileRow
     {
-        public DateTime OccurenceDateTime { get; set; }
+        public DateTime OccurrenceDateTime { get; set; }
         public double DataValue { get; set; }
-        public Enums.Divergence Divergence { get; set; }
+        public Divergence Divergence { get; set; }
 
         public FileRow(DateTime meterReadDateTime, double granularMeterRead)
         {
-            this.OccurenceDateTime = meterReadDateTime;
+            this.OccurrenceDateTime = meterReadDateTime;
             this.DataValue = granularMeterRead;
+            this.Divergence = Divergence.AcceptableDivergence;// Default Acceptance unless overridden
         }
 
         public FileRow()
@@ -76,19 +89,7 @@ namespace Entities
 
         }
 
-
-        //Static Method to return a MeterRead object for LP and TOU kind of files
-
-        public static FileRow FromCsv(string CsvLine)
-        {
-            string[] values = CsvLine.Split(',');
-            FileRow meterRead = new FileRow
-            {                
-                OccurenceDateTime = Convert.ToDateTime(values[3]),
-                DataValue = Convert.ToDouble(values[5])
-            };
-            return meterRead;
-        }
+       
     }
 
 

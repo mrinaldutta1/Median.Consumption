@@ -2,28 +2,28 @@
 <FileTypes>
 <FileType>
   <Identifier>LP*</Identifier>
-  <Item>
+  <Items>
       <ValueType>Occurence DateTime</ValueType>
       <FileHeaderName>Date/Time</FileHeaderName>
       <DotNetDataType>DateTime</DotNetDataType>   
-  </Item>
-  <Item>
+  </Items>
+  <Items>
     <ValueType>Data Value</ValueType>
     <FileHeaderName>Data Value</FileHeaderName>
     <DotNetDataType>Double</DotNetDataType>
-  </Item>
+  </Items>
 </FileType>
 <FileType>
   <Identifier>TOU*</Identifier>
-  <Item>
+  <Items>
     <ValueType>Occurence DateTime</ValueType>
     <FileHeaderName>Date/Time</FileHeaderName>
     <DotNetDataType>DateTime</DotNetDataType>
-  </Item>
-  <Item>
+  </Items>
+  <Items>
     <ValueType>Data Value</ValueType>
     <FileHeaderName>Energy</FileHeaderName>
     <DotNetDataType>Double</DotNetDataType>
-  </Item>
+  </Items>
 </FileType>
 </FileTypes>

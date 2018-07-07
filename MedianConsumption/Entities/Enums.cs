@@ -5,16 +5,32 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Entities
-{
-   public class Enums
-    {
+{   
         public enum Divergence
         {
-            GreaterThanTwentyPercent = 1,
-            LessThanTwentyPercent = 2
+            MoreThanAcceptableDivergence = 1,
+            LessThanAcceptableDivergence = 2,
+            AcceptableDivergence=3
 
+        }        
+
+       public enum FileProcessStatus
+        {
+            Undetermined,
+            BlankFileDetected,
+            FileRowsSkipped,
+            FileHeadersNotFound,
+            FileValidationSucceeded,
+            FileReadSuccessfully,
+            FileSuccessfullyProccessed,
+            FileSuccessfullyArchived
         }
 
-        
-    }
+       public enum FileArchivalType
+        {
+           Archive,
+           Error,
+           PartiallyProccessed
+        }
+    
 }
