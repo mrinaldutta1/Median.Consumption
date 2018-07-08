@@ -9,7 +9,7 @@ You would need to do the following steps to run and execute the solution:
 3. Set the log folder in the FileAppender sections of the App.Config. I have set the logging level to INFO.
 4. Build and Run the solution to read files from the input directory.
 
-Note: I have noticed an issue with the Nunit Test Adapter, which sometimes fail to load the test cases when opening the first time, uninstalling the NUnit Test Adapter Nuget package and installing it back again solves the issue.
+Note: I have noticed an issue with the Nunit Test Adapter's compatibility with VS2017, it sometimes fail to load the test cases when opening the solution for the first time, uninstalling the NUnit Test Adapter Nuget package and installing it back again solves the issue.
 
 Features:
 1. It would look at the input directory and find files which has the file identifiers mentioned in the FileConfiguration.xml
