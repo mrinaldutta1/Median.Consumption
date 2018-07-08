@@ -9,6 +9,8 @@ You would need to do the following steps to run and execute the solution:
 3. Set the log folder in the FileAppender sections of the App.Config. I have set the logging level to INFO.
 4. Build and Run the solution to read files from the input directory.
 
+Note: I have noticed an issue with the Nunit Test Adapter, which sometimes fail to load the test cases when opening the first time, uninstalling the NUnit Test Adapter Nuget package and installing it back again solves the issue.
+
 Features:
 1. It would look at the input directory and find files which has the file identifiers mentioned in the FileConfiguration.xml
 2. For each file, it would run validation steps to check to see if it's a valid file, if not it would log the error and mark the file as having failed validation. The validations which are done at a file level are blank file validation, column validation. The expected column names could be changed in the FileConfiguration.xml file. 
@@ -23,6 +25,7 @@ It prints out in this format:
 8. If the logging level is set to ERROR then if the files are malformed or blank it outputs the errors to the logs and console
 9. If the logging level is set to FATAL it would only log and display unhandled exceptions.
 10. The Columns are shifted around the file would still be processed
+
 
 
 
