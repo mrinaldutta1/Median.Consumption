@@ -10,7 +10,7 @@ You would need to do the following steps to run and execute the solution:
 4. Build and Run the solution to read files from the input directory.
 
 Features:
-1.It would look at the input directory and find files which has the file identifiers mentioned in the FileConfiguration.xml
+1. It would look at the input directory and find files which has the file identifiers mentioned in the FileConfiguration.xml
 2. For each file, it would run validation steps to check to see if it's a valid file, if not it would log the error, appropriately archive the file and move towards processing the next file. The validations which are done at a file level are blank file validation, column validation. The expected column names could be changed in the FileConfiguration.xml file. If there is any error at this stage the file would be marked as failed validation.
 3. Once validation has succeeded it would read the data in the file, for each row it would check if the data in the file is in the appropriate data format, if not it would still continue processing the file, but mark the file as partially processed. 
 4. It would then calculate the Median for all data values in the file.
