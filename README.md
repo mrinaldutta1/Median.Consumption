@@ -22,7 +22,7 @@ It prints out in this format:
 7. If the logging level is set to INFO it outputs statistics about the files which have been processed.
 8. If the logging level is set to ERROR then if the files are malformed or blank it outputs the errors to the logs and console
 9. If the logging level is set to FATAL it would only log and display unhandled exceptions.
-10. The Columnns are shifted around the file would still be processed
+10. The Columns are shifted around the file would still be processed
 
 
 
