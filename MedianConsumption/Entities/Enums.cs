@@ -23,7 +23,10 @@ namespace Entities
             FileValidationSucceeded,
             FileReadSuccessfully,
             FileSuccessfullyProccessed,
-            FileSuccessfullyArchived
+            FileSuccessfullyMoved,
+            FileSuccessfullyArchived,
+            FileSuccessfullyArchivedToError,
+            FileSuccessfullyArchivedToPartial
         }
 
        public enum FileArchivalType

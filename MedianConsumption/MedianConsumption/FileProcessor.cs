@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Entities;
 using System.Reflection;
+using System.Configuration;
 
- 
 namespace MedianConsumption
 {
     /// <summary>
@@ -16,6 +16,57 @@ namespace MedianConsumption
     public class FileProcessor:IFileProcessor
     {
         private readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public bool ProcessAllFiles(string  folderPath)
+        {
+            try
+            {
+                log.Debug("Start ProcessAllFiles()");
+                var fileTypes = FileTypes.GetFileTypes();
+                
+               
+                var dataFiles = FetchAllDataFiles(fileTypes, folderPath);
+                bool atleastOneFileFound =true;
+
+                if (dataFiles.Count() == 0)
+                {
+                    atleastOneFileFound = false;
+                    log.Warn("No Files Found in Input Directory, Exiting Processing!");
+                }
+                else
+                {
+                    double divergencePercentage = Convert.ToDouble(ConfigurationManager.AppSettings["DivergencePercentage"]);
+                    foreach (DataFile dataFile in dataFiles)
+                    {
+                        try
+                        {
+                            FileProcessStatus fileProcessStatus = FileProcessStatus.Undetermined;
+                            fileProcessStatus = ProcessInputFile(dataFile, fileTypes, folderPath, divergencePercentage);
+                            IArchivalHandler archivalHandler = new ArchivalHandler();
+                            fileProcessStatus = ProcessFileArchival(fileProcessStatus, dataFile.FileName, folderPath, archivalHandler);
+                        }
+                        catch (Exception ex)
+                        {
+                            log.Error("File processing has unexpectedly failed for " + dataFile.FileName + " Continuing processing for other files, if any!");
+                            log.Error(ex);
+                        }
+
+                    }
+                    OutputStatistics(dataFiles, divergencePercentage);
+                }
+
+
+                log.Info("Read Completed");
+                return atleastOneFileFound;
+                
+                
+            }
+
+            catch (Exception )
+            {
+                throw;
+            }
+        }
         
         public List<DataFile> FetchAllDataFiles(FileTypes fileTypes, string folderPath)
         {
@@ -115,7 +166,6 @@ namespace MedianConsumption
                     log.Warn(dataFile.FileName + " is blank, nothing to read! ");
 
                     validationStatus = FileProcessStatus.BlankFileDetected;
-                    //ArchiveErroredFile(dataFile.FileName, folderPath);
                     return Array.Empty<string>();
                 }
 
@@ -144,7 +194,6 @@ namespace MedianConsumption
                         {
                             log.Error("Column " + item.FileHeaderName + " is missing in file: " + dataFile.FileName);
                             validationStatus = FileProcessStatus.FileHeadersNotFound;
-                            // ArchiveErroredFile(dataFile.FileName, folderPath);
                             return Array.Empty<string>();
                         }
                     }
@@ -154,7 +203,7 @@ namespace MedianConsumption
                     return csvLines;
                 }
             }
-            catch
+            catch(Exception)
             {
                 throw;
             }
@@ -213,12 +262,13 @@ namespace MedianConsumption
             }
         }
 
-        public FileProcessStatus ArchiveFile(string fileName, string folderPath, FileArchivalType fileArchivalType)
+        public FileProcessStatus ArchiveFile(string fileName, string folderPath, FileArchivalType fileArchivalType, IArchivalHandler archivalHandler)
         {
             try
             {
                 log.Debug("Start ArchiveFile()");
                 string destinationFolderType;
+                FileProcessStatus fileProcessStatus = FileProcessStatus.Undetermined;
 
                 if (fileArchivalType == FileArchivalType.Archive)
                     destinationFolderType = "Archive";
@@ -232,19 +282,20 @@ namespace MedianConsumption
 
                 string destinationFullPath = folderPath + "\\"+ destinationFolderType +"\\" + fileName;
                 string sourceFullPath = folderPath + fileName;
-                Directory.CreateDirectory(folderPath + "\\" + destinationFolderType);
-                if (!File.Exists(destinationFullPath))
-                    File.Move(sourceFullPath, destinationFullPath);
-                else
+               
+                if (archivalHandler.CreateDirectory(folderPath + "\\" + destinationFolderType))
                 {
-                    File.Delete(destinationFullPath);
-                    File.Move(sourceFullPath, destinationFullPath);
+                    if (!archivalHandler.FileExists(destinationFullPath))
+                        fileProcessStatus = archivalHandler.MoveFile(sourceFullPath, destinationFullPath);
+                    else
+                    {
+                        if (archivalHandler.DeleteFile(destinationFullPath))
+                         fileProcessStatus = archivalHandler.MoveFile(sourceFullPath, destinationFullPath);
+                    }
                 }
-                log.Info(destinationFolderType + " file moved from " + sourceFullPath + " to " + destinationFullPath);
-                return FileProcessStatus.FileSuccessfullyArchived;
+                
+                return fileProcessStatus;
             }
-
-
 
             catch (Exception)
             {
@@ -253,21 +304,35 @@ namespace MedianConsumption
 
         }
 
-        public FileProcessStatus ProcessFileArchival(FileProcessStatus fileProcessStatus, string fileName, string folderPath )
+       
+
+
+        public FileProcessStatus ProcessFileArchival(FileProcessStatus fileProcessStatus, string fileName, string folderPath, IArchivalHandler archivalHandler)
         {
             try
             {
                 log.Debug("Start ProcessFileArchival()");
+                FileProcessStatus archiveProcessStatus = FileProcessStatus.Undetermined;
                 if (fileProcessStatus == FileProcessStatus.FileSuccessfullyProccessed)
-                    fileProcessStatus = ArchiveFile(fileName, folderPath ,FileArchivalType.Archive);
+                {
+                    archiveProcessStatus = ArchiveFile(fileName, folderPath, FileArchivalType.Archive, archivalHandler);
+                    archiveProcessStatus = FileProcessStatus.FileSuccessfullyArchived;
+                }
                 else if ((fileProcessStatus == FileProcessStatus.FileHeadersNotFound) ||
                     (fileProcessStatus == FileProcessStatus.BlankFileDetected))
-                    fileProcessStatus = ArchiveFile(fileName, folderPath,FileArchivalType.Error);
+                {
+                    archiveProcessStatus = ArchiveFile(fileName, folderPath, FileArchivalType.Error, archivalHandler);
+                    archiveProcessStatus = FileProcessStatus.FileSuccessfullyArchivedToError;
+                }
                 else if (fileProcessStatus == FileProcessStatus.FileRowsSkipped)
-                    fileProcessStatus = ArchiveFile(fileName, folderPath,FileArchivalType.PartiallyProccessed);
+                {
+                    archiveProcessStatus = ArchiveFile(fileName, folderPath, FileArchivalType.PartiallyProccessed, archivalHandler);
+                    archiveProcessStatus = FileProcessStatus.FileSuccessfullyArchivedToPartial;
+                }
                
 
-                return fileProcessStatus;
+
+                return archiveProcessStatus;
             }
             catch(Exception)
             {

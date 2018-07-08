@@ -12,9 +12,7 @@ namespace Entities
             [XmlElement(ElementName = "ValueType")]
             public string ValueType { get; set; }
             [XmlElement(ElementName = "FileHeaderName")]
-            public string FileHeaderName { get; set; }
-            [XmlElement(ElementName = "DotNetDataType")]
-            public string DotNetDataType { get; set; }
+            public string FileHeaderName { get; set; }           
             public int? Index { get; set; }
         }
 

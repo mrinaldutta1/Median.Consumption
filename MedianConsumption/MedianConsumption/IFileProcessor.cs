@@ -6,6 +6,11 @@ namespace MedianConsumption
     public interface IFileProcessor
     {
         /// <summary>
+        /// Processes all files in the input directory
+        /// </summary>
+        bool ProcessAllFiles(string folderPath);
+
+        /// <summary>
         /// Fetches All Data Files from the input directory
         /// </summary>
         /// <param name="fileTypes"></param>
@@ -47,16 +52,18 @@ namespace MedianConsumption
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="folderPath"></param>
-        FileProcessStatus ArchiveFile(string fileName, string folderPath, FileArchivalType fileArchivalType);
+        FileProcessStatus ArchiveFile(string fileName, string folderPath, FileArchivalType fileArchivalType,IArchivalHandler archivalHandler);
+
+        
 
         /// <summary>
-        /// Decided on how files should be archived
+        /// Decide on how files should be archived
         /// </summary>
         /// <param name="fileProcessStatus"></param>
         /// <param name="fileName"></param>
         /// <param name="folderPath"></param>
         /// <returns></returns>
-        FileProcessStatus ProcessFileArchival(FileProcessStatus fileProcessStatus, string fileName, string folderPath);
+        FileProcessStatus ProcessFileArchival(FileProcessStatus fileProcessStatus, string fileName, string folderPath, IArchivalHandler archivalHandler);
 
         /// <summary>
         /// Prints Statistics at the end of processing

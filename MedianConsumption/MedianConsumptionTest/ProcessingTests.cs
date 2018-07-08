@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
 using Entities;
 using System.IO;
 using System.Linq;
@@ -9,7 +7,7 @@ using NUnit.Framework;
 
 namespace MedianConsumptionTest
 {
-   
+
     [TestFixture]
     public class ProcessingTests
     {
@@ -20,9 +18,10 @@ namespace MedianConsumptionTest
         /// </summary>
         [TestCase("LP_ValidFile12Rows",40, 3.8, 0, 0, 12)]
         [TestCase("LP_ValidFile12Rows",20, 3.8, 1, 1, 12)]
-        [TestCase("LP_ValidFile12Rows",0, 3.8, 12, 12, 12)]
+        [TestCase("LP_ValidFile12Rows",0, 3.8, 6, 6, 12)]
         [TestCase("TOU_ValidFile9Rows", 20, 0.146, 0, 2, 9)]
         [TestCase("TOU_ValidFile9Rows", 100000, 0.146, 0, 0, 9)]
+
         public void TestPositiveFilesProcessing(string fileName, double divergencePercentage, double medianResult, int noOfMoreDivergentResult, int noOfLessDivergentResult, int noOfLinesProcessedResult )
         {           
 
@@ -31,7 +30,7 @@ namespace MedianConsumptionTest
             FileTypes fileTypes=  FileTypes.GetFileTypes();
             DataFile testFile = fileProcessor.FetchAllDataFiles(fileTypes, testFolder)
                                               .Find(x => x.FileName.Contains(fileName));
-            fileProcessor.ProcessInputFile(testFile, fileTypes, testFolder, divergencePercentage);
+            FileProcessStatus fileProcessStatus = fileProcessor.ProcessInputFile(testFile, fileTypes, testFolder, divergencePercentage);
 
             //Tests Median Value
             Assert.AreEqual(medianResult, testFile.MedianValue);
@@ -44,6 +43,27 @@ namespace MedianConsumptionTest
 
             //Test the number of files processed
             Assert.AreEqual(noOfLinesProcessedResult, testFile.MeterReads.Count());
+
+            //Tests if file is sucessfully processed
+            Assert.AreEqual(FileProcessStatus.FileSuccessfullyProccessed, fileProcessStatus);
+
+        }
+
+        [TestCase("TOU_MissingColumn")]
+        public void TestNegativeFilesProcessing(string fileName)
+        {
+
+            string testFolder = GetTestDataFolder();
+            IFileProcessor fileProcessor = new FileProcessor();
+            FileTypes fileTypes = FileTypes.GetFileTypes();
+            DataFile testFile = fileProcessor.FetchAllDataFiles(fileTypes, testFolder)
+                                              .Find(x => x.FileName.Contains(fileName));
+            double divergencePercentage = 20;
+            FileProcessStatus fileProcessStatus = fileProcessor.ProcessInputFile(testFile, fileTypes, testFolder, divergencePercentage);
+
+         
+
+            Assert.AreEqual(FileProcessStatus.FileHeadersNotFound, fileProcessStatus);
 
         }
         /// <summary>
@@ -72,8 +92,8 @@ namespace MedianConsumptionTest
         /// Tests the number of files matching the condition has been correctly picked up
         /// </summary>
         /// <param name="noOfFilesResult"></param>
-        [TestCase(4)]
-        public void TestNumberOfFilesProcessed(int noOfFilesResult)
+        [TestCase(5)]
+        public void TestNumberOfFilesFetched(int noOfFilesResult)
         {
             string testFolder = GetTestDataFolder();
             IFileProcessor fileProcessor = new FileProcessor();
@@ -113,6 +133,17 @@ namespace MedianConsumptionTest
 
         }
 
+
+        [Test]
+        public void TestIfNoInputFilesFound()
+        {
+            IFileProcessor fileProcessor = new FileProcessor();
+            string inputFolder = GetTestDataFolder() + "\\FolderToTestNoDataFiles";
+            bool isFileFound = fileProcessor.ProcessAllFiles(inputFolder);
+            Assert.AreEqual(false, isFileFound);
+
+        }
+       
 
         public static string GetTestDataFolder()
         {

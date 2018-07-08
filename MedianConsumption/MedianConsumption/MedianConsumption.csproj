@@ -53,10 +53,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileProcessor.cs" />
+    <Compile Include="IArchivalHandler.cs" />
     <Compile Include="IFileProcessor.cs" />
+    <Compile Include="ArchivalHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

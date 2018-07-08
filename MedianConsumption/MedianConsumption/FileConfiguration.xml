@@ -4,13 +4,11 @@
   <Identifier>LP*</Identifier>
   <Items>
       <ValueType>Occurence DateTime</ValueType>
-      <FileHeaderName>Date/Time</FileHeaderName>
-      <DotNetDataType>DateTime</DotNetDataType>   
+      <FileHeaderName>Date/Time</FileHeaderName>  
   </Items>
   <Items>
     <ValueType>Data Value</ValueType>
-    <FileHeaderName>Data Value</FileHeaderName>
-    <DotNetDataType>Double</DotNetDataType>
+    <FileHeaderName>Data Value</FileHeaderName> 
   </Items>
 </FileType>
 <FileType>
@@ -18,12 +16,10 @@
   <Items>
     <ValueType>Occurence DateTime</ValueType>
     <FileHeaderName>Date/Time</FileHeaderName>
-    <DotNetDataType>DateTime</DotNetDataType>
   </Items>
   <Items>
     <ValueType>Data Value</ValueType>
     <FileHeaderName>Energy</FileHeaderName>
-    <DotNetDataType>Double</DotNetDataType>
   </Items>
 </FileType>
 </FileTypes>

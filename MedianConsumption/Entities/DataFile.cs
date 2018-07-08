@@ -21,13 +21,7 @@ namespace Entities
         public List<FileRow> MeterReads { get; set; }
         public FileProcessStatus ProcessingStatus { get;set; }
 
-        public DataFile(string fileName, double medianValue, List<FileRow> meterReads)
-        {
-            this.FileName = fileName;
-            this.MedianValue = medianValue;
-            this.MeterReads = meterReads;
-        }
-
+       
         public DataFile()
         {
 
@@ -84,11 +78,7 @@ namespace Entities
             this.Divergence = Divergence.AcceptableDivergence;// Default Acceptance unless overridden
         }
 
-        public FileRow()
-        {
-
-        }
-
+        
        
     }
 
