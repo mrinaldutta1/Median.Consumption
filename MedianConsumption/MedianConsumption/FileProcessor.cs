@@ -17,7 +17,7 @@ namespace MedianConsumption
     {
         private readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public bool ProcessAllFiles(string  folderPath)
+        public bool ProcessAllFiles(string  folderPath, IArchivalHandler archivalHandler,ref List<DataFile> dataFiles)
         {
             try
             {
@@ -25,7 +25,7 @@ namespace MedianConsumption
                 var fileTypes = FileTypes.GetFileTypes();
                 
                
-                var dataFiles = FetchAllDataFiles(fileTypes, folderPath);
+                dataFiles = FetchAllDataFiles(fileTypes, folderPath);
                 bool atleastOneFileFound =true;
 
                 if (dataFiles.Count() == 0)
@@ -41,9 +41,9 @@ namespace MedianConsumption
                         try
                         {
                             FileProcessStatus fileProcessStatus = FileProcessStatus.Undetermined;
-                            fileProcessStatus = ProcessInputFile(dataFile, fileTypes, folderPath, divergencePercentage);
-                            IArchivalHandler archivalHandler = new ArchivalHandler();
+                            fileProcessStatus = ProcessInputFile(dataFile, fileTypes, folderPath, divergencePercentage);                          
                             fileProcessStatus = ProcessFileArchival(fileProcessStatus, dataFile.FileName, folderPath, archivalHandler);
+                            dataFile.ProcessingStatus = fileProcessStatus;
                         }
                         catch (Exception ex)
                         {
@@ -144,7 +144,8 @@ namespace MedianConsumption
                 #endregion
 
                 if (fileProcessStatus != FileProcessStatus.FileRowsSkipped)
-                    fileProcessStatus = FileProcessStatus.FileSuccessfullyProccessed;
+                    if (fileProcessStatus != FileProcessStatus.FileOnlyHeaderFound)
+                       fileProcessStatus = FileProcessStatus.FileSuccessfullyProccessed;
                 
                 return fileProcessStatus;
             }
@@ -164,7 +165,6 @@ namespace MedianConsumption
                 if (new FileInfo(folderPath + dataFile.FileName).Length == 0)
                 {
                     log.Warn(dataFile.FileName + " is blank, nothing to read! ");
-
                     validationStatus = FileProcessStatus.BlankFileDetected;
                     return Array.Empty<string>();
                 }
@@ -218,6 +218,13 @@ namespace MedianConsumption
 
                 int dateTimeColumnIndex = Convert.ToInt32(fileType.Items.FirstOrDefault(x => x.ValueType == "Occurence DateTime").Index);
                 int valueColumnIndex = Convert.ToInt32(fileType.Items.FirstOrDefault(x => x.ValueType == "Data Value").Index);
+
+                //Check if data exists other than the header
+                if(csvLines.Skip(1).Count()==0)
+                {
+                    readFileStatus = FileProcessStatus.FileOnlyHeaderFound;
+                    return null;
+                }
 
                 foreach (string csvLine in csvLines.Skip(1))
                 {
@@ -317,20 +324,17 @@ namespace MedianConsumption
                 {
                     archiveProcessStatus = ArchiveFile(fileName, folderPath, FileArchivalType.Archive, archivalHandler);
                     archiveProcessStatus = FileProcessStatus.FileSuccessfullyArchived;
-                }
-                else if ((fileProcessStatus == FileProcessStatus.FileHeadersNotFound) ||
-                    (fileProcessStatus == FileProcessStatus.BlankFileDetected))
-                {
-                    archiveProcessStatus = ArchiveFile(fileName, folderPath, FileArchivalType.Error, archivalHandler);
-                    archiveProcessStatus = FileProcessStatus.FileSuccessfullyArchivedToError;
-                }
+                }              
                 else if (fileProcessStatus == FileProcessStatus.FileRowsSkipped)
                 {
                     archiveProcessStatus = ArchiveFile(fileName, folderPath, FileArchivalType.PartiallyProccessed, archivalHandler);
                     archiveProcessStatus = FileProcessStatus.FileSuccessfullyArchivedToPartial;
                 }
-               
-
+                else
+                {
+                    archiveProcessStatus = ArchiveFile(fileName, folderPath, FileArchivalType.Error, archivalHandler);
+                    archiveProcessStatus = FileProcessStatus.FileSuccessfullyArchivedToError;
+                }
 
                 return archiveProcessStatus;
             }

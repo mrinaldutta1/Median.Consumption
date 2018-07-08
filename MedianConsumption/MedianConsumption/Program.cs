@@ -3,6 +3,7 @@ using System.Linq;
 using Entities;
 using System.Configuration;
 using System.Reflection;
+using System.Collections.Generic;
 
 [assembly: log4net.Config.XmlConfigurator(Watch = true)]
 
@@ -18,7 +19,9 @@ namespace MedianConsumption
             {
                 string folderPath = ConfigurationManager.AppSettings["InputFolder"];
                 IFileProcessor fileProcessor = new FileProcessor();
-                fileProcessor.ProcessAllFiles(folderPath);
+                IArchivalHandler archivalHandler = new ArchivalHandler();
+                List<DataFile> dataFiles = new List<DataFile>();
+                fileProcessor.ProcessAllFiles(folderPath, archivalHandler, ref dataFiles);
                 Console.Read();
             }
             catch(Exception ex)

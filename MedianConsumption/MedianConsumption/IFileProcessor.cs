@@ -5,10 +5,11 @@ namespace MedianConsumption
 {
     public interface IFileProcessor
     {
+
         /// <summary>
         /// Processes all files in the input directory
         /// </summary>
-        bool ProcessAllFiles(string folderPath);
+        bool ProcessAllFiles(string folderPath, IArchivalHandler archivalHandler, ref List<DataFile> dataFiles);
 
         /// <summary>
         /// Fetches All Data Files from the input directory
@@ -53,7 +54,6 @@ namespace MedianConsumption
         /// <param name="fileName"></param>
         /// <param name="folderPath"></param>
         FileProcessStatus ArchiveFile(string fileName, string folderPath, FileArchivalType fileArchivalType,IArchivalHandler archivalHandler);
-
         
 
         /// <summary>

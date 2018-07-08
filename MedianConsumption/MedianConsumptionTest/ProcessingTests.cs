@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using MedianConsumption;
 using NUnit.Framework;
+using System.Collections.Generic;
+using Moq;
 
 namespace MedianConsumptionTest
 {
@@ -66,6 +68,22 @@ namespace MedianConsumptionTest
             Assert.AreEqual(FileProcessStatus.FileHeadersNotFound, fileProcessStatus);
 
         }
+
+        [TestCase("LP_OnlyHeader")]
+        public void TestOnlyHeaderFilesProcessing(string fileName)
+        {
+
+            string testFolder = GetTestDataFolder();
+            IFileProcessor fileProcessor = new FileProcessor();
+            FileTypes fileTypes = FileTypes.GetFileTypes();
+            DataFile testFile = fileProcessor.FetchAllDataFiles(fileTypes, testFolder)
+                                              .Find(x => x.FileName.Contains(fileName));
+            double divergencePercentage = 20;
+            FileProcessStatus fileProcessStatus = fileProcessor.ProcessInputFile(testFile, fileTypes, testFolder, divergencePercentage);
+            Assert.AreEqual(FileProcessStatus.FileOnlyHeaderFound, fileProcessStatus);
+
+        }
+
         /// <summary>
         /// Tests if Blank Files are correctly not processed
         /// </summary>
@@ -92,7 +110,7 @@ namespace MedianConsumptionTest
         /// Tests the number of files matching the condition has been correctly picked up
         /// </summary>
         /// <param name="noOfFilesResult"></param>
-        [TestCase(5)]
+        [TestCase(6)]
         public void TestNumberOfFilesFetched(int noOfFilesResult)
         {
             string testFolder = GetTestDataFolder();
@@ -134,15 +152,39 @@ namespace MedianConsumptionTest
         }
 
 
+        [TestCase("LP_OnlyHeader")]
+        public void TestOnlyHeaderFile(string fileName)
+        {
+            string testFolder = GetTestDataFolder();
+            IFileProcessor fileProcessor = new FileProcessor();
+            FileTypes fileTypes = FileTypes.GetFileTypes();
+            DataFile testFile = fileProcessor.FetchAllDataFiles(fileTypes, testFolder)
+                                              .Find(x => x.FileName.Contains(fileName));
+            FileType fileType = new FileType();
+            FileProcessStatus validationSuccess = FileProcessStatus.Undetermined;
+            string[] file = fileProcessor.ValidateInputFile(testFile, fileTypes, ref fileType, testFolder, ref validationSuccess);
+            testFile.MeterReads = fileProcessor.ReadFile(file, fileType, ref validationSuccess);
+            Assert.AreEqual(validationSuccess, FileProcessStatus.FileOnlyHeaderFound);
+        }
+
         [Test]
         public void TestIfNoInputFilesFound()
         {
+            Mock<IArchivalHandler> mockArchivalHandler = new Mock<IArchivalHandler>();
+            mockArchivalHandler.Setup(x => x.CreateDirectory(It.IsAny<string>())).Returns(true);
+            mockArchivalHandler.Setup(x => x.FileExists(It.IsAny<string>())).Returns(true);
+            mockArchivalHandler.Setup(x => x.DeleteFile(It.IsAny<string>())).Returns(true);
+            mockArchivalHandler.Setup(x => x.MoveFile(It.IsAny<string>(), It.IsAny<string>())).Returns(FileProcessStatus.FileSuccessfullyArchived);
+
             IFileProcessor fileProcessor = new FileProcessor();
             string inputFolder = GetTestDataFolder() + "\\FolderToTestNoDataFiles";
-            bool isFileFound = fileProcessor.ProcessAllFiles(inputFolder);
+            List<DataFile> dataFiles = new List<DataFile>();
+            bool isFileFound = fileProcessor.ProcessAllFiles(inputFolder, mockArchivalHandler.Object, ref dataFiles);
             Assert.AreEqual(false, isFileFound);
 
         }
+
+
        
 
         public static string GetTestDataFolder()

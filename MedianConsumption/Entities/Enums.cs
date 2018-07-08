@@ -20,6 +20,7 @@ namespace Entities
             BlankFileDetected,
             FileRowsSkipped,
             FileHeadersNotFound,
+            FileOnlyHeaderFound,
             FileValidationSucceeded,
             FileReadSuccessfully,
             FileSuccessfullyProccessed,
